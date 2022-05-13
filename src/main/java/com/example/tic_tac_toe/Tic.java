@@ -7,20 +7,29 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-public class Tic extends Application {
-    private int count = 0;
-    GridPane gridPane = new GridPane();
+public class Tic extends Application{
 
-    public String getNodes(final int row, final int column, GridPane gridPane) {
-        Button button = null;
-        ObservableList<Node> children = gridPane.getChildren();
 
-        for (Node node : children) {
-            if (GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == column) {
-                button= (Button) node;
+    private boolean round=true;
+    private  int count = 0;
+
+
+    /*
+        To get the children
+     */
+
+    private String getNodes(int row, int col, GridPane gridPane){
+
+        Button button =  null;
+        ObservableList<Node>children = gridPane.getChildren();
+
+        for(Node node:children){
+            if(GridPane.getColumnIndex(node) ==col && GridPane.getRowIndex(node)==row){
+                button = (Button) node;
                 break;
             }
         }
@@ -28,77 +37,87 @@ public class Tic extends Application {
         return button.getText();
     }
 
-    public boolean isWon(String c, GridPane gridPane) {
-        for (int row = 0; row < 3; row++) {
-            if (getNodes(0, row, gridPane).equals(c) && getNodes(1, row, gridPane).equals(c)
-                    && getNodes(2, row, gridPane).equals(c)) {
-                return true;
-            }
-        }
-        for (int col = 0; col < 3; col++) {
-            if (getNodes(col, 0, gridPane).equals(c) && getNodes(col, 1, gridPane).equals(c)
-                    && getNodes(col, 2, gridPane).equals(c)) {
+    //method for winning positions
+    private boolean isWon(String s, GridPane gridPane){
+
+        for (int i = 0; i < 3; i++) {
+            if(getNodes(0,i, gridPane).equals(s) &&getNodes(1,i, gridPane).equals(s)
+                    && getNodes(2,i, gridPane).equals(s)){
                 return true;
             }
         }
 
-/////////////////// Diagonals /////////////////////////////////////////////////////
-        if (getNodes (0, 0, gridPane).equals(c)
-                && getNodes(1, 1, gridPane).equals(c)
-                && getNodes(2, 2, gridPane).equals(c)) {
+        for (int j = 0; j < 3; j++) {
+            if(getNodes(j,0, gridPane).equals(s) &&getNodes(j,1, gridPane).equals(s)
+                    && getNodes(j,2, gridPane).equals(s)){
+                return true;
+            }
+        }
+
+        if(getNodes(0,0, gridPane).equals(s) &&getNodes(1,1, gridPane).equals(s)
+                && getNodes(2,2, gridPane).equals(s)){
             return true;
         }
-        if (getNodes(0, 2, gridPane).equals(c)
-                && getNodes(1, 1, gridPane).equals(c)
-                && getNodes(2, 0, gridPane).equals(c)) {
+
+        if(getNodes(0,2, gridPane).equals(s) &&getNodes(1,1, gridPane).equals(s)
+                && getNodes(2,0, gridPane).equals(s)){
             return true;
         }
+
         return false;
-
     }
+
 
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        GridPane gridPane = new GridPane();
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 Button button = new Button();
                 button.setPrefSize(100, 100);
+                button.setFont(Font.font(20));
+
+                button.setOnMouseClicked(mouseEvent-> {
+                    count++;
+                    if(round && button.getText().equals("")){
+                        button.setText("X");
+                        round = false;
+                        button.setTextFill(Color.RED);
+                    }if(!round && button.getText().equals("")){
+                        button.setText("O");
+                        button.setTextFill(Color.BLUE);
+                        round = true;
+
+                    }
+
+                    if(isWon("X", gridPane)){
+                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                        alert.setContentText("X won this round!");
+                        alert.show();
+
+                    }
+
+                    if(isWon("O", gridPane)){
+                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                        alert.setContentText("O won this round!");
+                        alert.show();
+
+                    }
+
+                    if(!isWon("X", gridPane) && !isWon("O", gridPane) && count==9){
+                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                        alert.setContentText("It's a draw");
+                        alert.show();
+                    }
+
+                });
 
                 gridPane.add(button, j, i);
-
-                button.setOnMouseClicked(mouseEvent -> {
-                    count++;
-                    if (count % 2 == 0) {
-                        if (button.getText().equals("")) {
-                            button.setText("O");
-                            button.setFont(Font.font(20));
-                        }
-
-                    } else {
-                        if (button.getText().equals("")) {
-                            button.setText("X");
-                            button.setFont(Font.font(20));
-                        }
-                    }
-
-                    if (isWon("X", gridPane)) {
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setContentText("X Won");
-                        alert.show();
-                    }
-
-                    if (isWon("O", gridPane)) {
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setContentText("O Won");
-                        alert.show();
-                    }
-                });
             }
         }
 
 
-        primaryStage.setTitle("Tic Tac Toe");
         primaryStage.setScene(new Scene(gridPane));
         primaryStage.show();
     }
