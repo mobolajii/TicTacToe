@@ -15,7 +15,8 @@ public class Tic extends Application{
 
 
     private boolean round=true;
-    private  int count = 0;
+    private  int countX = 0;
+    private int countO = 0;
 
 
     /*
@@ -79,15 +80,17 @@ public class Tic extends Application{
                 button.setFont(Font.font(20));
 
                 button.setOnMouseClicked(mouseEvent-> {
-                    count++;
+
                     if(round && button.getText().equals("")){
                         button.setText("X");
                         round = false;
                         button.setTextFill(Color.RED);
+                        countX++;
                     }if(!round && button.getText().equals("")){
                         button.setText("O");
                         button.setTextFill(Color.BLUE);
                         round = true;
+                        countO++;
 
                     }
 
@@ -105,10 +108,12 @@ public class Tic extends Application{
 
                     }
 
-                    if(!isWon("X", gridPane) && !isWon("O", gridPane) && count==9){
-                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                        alert.setContentText("It's a draw");
-                        alert.show();
+                    if(!isWon("X", gridPane) && !isWon("O", gridPane)  ){
+                        if((countX==4 && countO==5) || (countO==4 && countX==5)){
+                            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                            alert.setContentText("It's a draw");
+                            alert.show();
+                        }
                     }
 
                 });
