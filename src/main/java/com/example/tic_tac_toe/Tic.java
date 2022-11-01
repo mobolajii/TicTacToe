@@ -42,18 +42,20 @@ public class Tic extends Application{
     private boolean isWon(String s, GridPane gridPane){
 
         for (int i = 0; i < 3; i++) {
+            // Vertical check.
             if(getNodes(0,i, gridPane).equals(s) &&getNodes(1,i, gridPane).equals(s)
                     && getNodes(2,i, gridPane).equals(s)){
                 return true;
             }
-        }
-
-        for (int j = 0; j < 3; j++) {
-            if(getNodes(j,0, gridPane).equals(s) &&getNodes(j,1, gridPane).equals(s)
-                    && getNodes(j,2, gridPane).equals(s)){
+            
+            // Horizontal check.
+             if(getNodes(i,0, gridPane).equals(s) &&getNodes(i,1, gridPane).equals(s)
+                    && getNodes(i,2, gridPane).equals(s)){
                 return true;
             }
         }
+
+    
 
         if(getNodes(0,0, gridPane).equals(s) &&getNodes(1,1, gridPane).equals(s)
                 && getNodes(2,2, gridPane).equals(s)){
